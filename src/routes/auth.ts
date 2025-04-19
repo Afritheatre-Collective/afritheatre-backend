@@ -38,7 +38,7 @@ const registerHandler: RequestHandler<{}, any, RegisterRequestBody> = async (
       email,
       password: hashedPassword,
     });
-    return;
+
     res.status(201).json({ message: "User registered", user: newUser });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err });
