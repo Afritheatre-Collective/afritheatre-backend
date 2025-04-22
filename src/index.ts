@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors, { CorsOptions } from "cors"; // ✅ Import CORS and types
 import connectDB from "./connection/db";
 import authRoutes from "./routes/auth";
+import theatreRoutes from "./routes/theatre";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use(express.json());
 connectDB();
 
 app.use("/api/auth", authRoutes);
+app.use("/api/theatre", theatreRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
