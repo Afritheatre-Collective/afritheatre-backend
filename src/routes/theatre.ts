@@ -1,80 +1,110 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, Router, RequestHandler } from "express";
 import TheatreActivity from "../models/TheatreActivity";
+import connectDB from "../connection/db";
 
-const router = express.Router();
+const router: Router = express.Router();
 
-interface TheatreActivityRequestBody {
-  month: string;
-  week: string;
-  date: string;
-  year: string;
-  time: string;
+// ===== Types =====
+export interface TheatreActivityRequestBody {
+  month?: string;
+  week?: string;
+  date?: string;
+  year?: string;
+  time?: string;
   companyName: string;
-  sector: string;
-  companyStatus: string;
-  activityType: string;
-  nature: string;
+  sector?: "public" | "private";
+  companyStatus?: "new" | "existing";
+  activityType?: "performance" | "capacity" | "outreach";
+  nature?:
+    | "frequent-regular"
+    | "frequent-irregular"
+    | "infrequent-regular"
+    | "infrequent-irregular";
   eventName: string;
-  county: string;
+  county?: string;
   venue?: string;
   newVenue?: string;
-  totalSessions: string;
-  jobsCreated: string;
-  indirectJobs: string;
-  directJobs: string;
-  entryType: string;
+  totalSessions?: string;
+  jobsCreated?: string;
+  indirectJobs?: string;
+  directJobs?: string;
+  entryType?: "free" | "paid";
   bookingPlatform?: string;
   newBookingPlatform?: string;
   paymentMethods?: string[];
-  language: string;
+  language?: string;
   otherLanguage?: string;
   contactPerson: string;
-  email: string;
-  phone: string;
+  email?: string;
+  phone?: string;
   notes?: string;
 }
 
-router.post(
-  "/submit",
-  async (req: Request<{}, {}, TheatreActivityRequestBody>, res: Response) => {
-    try {
-      const formData = req.body;
-      console.log("Received theatre data:", JSON.stringify(formData, null, 2));
+// ===== Handlers =====
 
-      // Create a new theatre activity document
-      const newActivity = new TheatreActivity({
-        month: formData.month,
-        week: formData.week,
-        // ... rest of the fields
+// Create a new theatre activity
+const createTheatreActivityHandler: RequestHandler<
+  {},
+  any,
+  TheatreActivityRequestBody
+> = async (req, res) => {
+  await connectDB();
+  try {
+    const activityData = req.body;
+
+    // Basic validation
+    if (
+      !activityData.companyName ||
+      !activityData.eventName ||
+      !activityData.contactPerson
+    ) {
+      res.status(400).json({
+        success: false,
+        message: "Company name, event name, and contact person are required",
       });
-
-      console.log("Document to be saved:", newActivity);
-
-      // Save to database
-      const savedActivity = await newActivity.save();
-      console.log("Saved document:", savedActivity);
-
-      res.status(201).json({
-        message: "Theatre activity submitted successfully",
-        data: savedActivity.toObject(), // Convert to plain object
-      });
-    } catch (error) {
-      console.error("Full error stack:", error);
-      if (error instanceof Error) {
-        console.error("Error submitting theatre activity:", error);
-        res.status(500).json({
-          message: "Failed to submit theatre activity",
-          error: error.message,
-        });
-      } else {
-        console.error("Error submitting theatre activity:", error);
-        res.status(500).json({
-          message: "Failed to submit theatre activity",
-          error: "An unknown error occurred",
-        });
-      }
+      return;
     }
+
+    const newActivity = new TheatreActivity(activityData);
+    await newActivity.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Theatre activity created successfully",
+      data: newActivity,
+    });
+  } catch (error) {
+    console.error("Error creating theatre activity:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: errorMessage,
+    });
   }
-);
+};
+
+// Get all theatre activities
+const getTheatreActivitiesHandler: RequestHandler = async (req, res) => {
+  await connectDB();
+  try {
+    const activities = await TheatreActivity.find().sort({ createdAt: -1 });
+    res.status(200).json({
+      success: true,
+      data: activities,
+    });
+  } catch (error) {
+    console.error("Error fetching theatre activities:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+// ===== Routes =====
+router.post("/theatre-activities", createTheatreActivityHandler);
+router.get("/theatre-activities", getTheatreActivitiesHandler);
 
 export default router;

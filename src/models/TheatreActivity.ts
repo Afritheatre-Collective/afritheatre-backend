@@ -1,5 +1,6 @@
-import mongoose, { Document, Schema } from "mongoose";
+import { Document, model, Schema } from "mongoose";
 
+// ===== Interface =====
 export interface ITheatreActivity extends Document {
   month: string;
   week: string;
@@ -7,19 +8,23 @@ export interface ITheatreActivity extends Document {
   year: string;
   time: string;
   companyName: string;
-  sector: string;
-  companyStatus: string;
-  activityType: string;
-  nature: string;
+  sector: "public" | "private";
+  companyStatus: "new" | "existing";
+  activityType: "performance" | "capacity" | "outreach";
+  nature:
+    | "frequent-regular"
+    | "frequent-irregular"
+    | "infrequent-regular"
+    | "infrequent-irregular";
   eventName: string;
   county: string;
   venue: string;
   newVenue: string;
-  totalSessions: string;
-  jobsCreated: string;
-  indirectJobs: string;
-  directJobs: string;
-  entryType: string;
+  totalSessions: string; // or number, depending on your needs
+  jobsCreated: string; // or number
+  indirectJobs: string; // or number
+  directJobs: string; // or number
+  entryType: "free" | "paid";
   bookingPlatform: string;
   newBookingPlatform: string;
   paymentMethods: string[];
@@ -33,35 +38,47 @@ export interface ITheatreActivity extends Document {
   updatedAt: Date;
 }
 
+// ===== Schema =====
 const TheatreActivitySchema: Schema = new Schema(
   {
-    month: { type: String, required: true },
-    week: { type: String, required: true },
-    date: { type: String, required: true },
-    year: { type: String, required: true },
-    time: { type: String, required: true },
+    month: { type: String },
+    week: { type: String },
+    date: { type: String },
+    year: { type: String },
+    time: { type: String },
     companyName: { type: String, required: true },
-    sector: { type: String, required: true },
-    companyStatus: { type: String, required: true },
-    activityType: { type: String, required: true },
-    nature: { type: String, required: true },
+    sector: { type: String, enum: ["public", "private"] },
+    companyStatus: { type: String, enum: ["new", "existing"] },
+    activityType: {
+      type: String,
+      enum: ["performance", "capacity", "outreach"],
+    },
+    nature: {
+      type: String,
+      enum: [
+        "frequent-regular",
+        "frequent-irregular",
+        "infrequent-regular",
+        "infrequent-irregular",
+      ],
+    },
     eventName: { type: String, required: true },
-    county: { type: String, required: true },
+    county: { type: String },
     venue: { type: String },
     newVenue: { type: String },
-    totalSessions: { type: String, required: true },
-    jobsCreated: { type: String, required: true },
-    indirectJobs: { type: String, required: true },
-    directJobs: { type: String, required: true },
-    entryType: { type: String, required: true },
+    totalSessions: { type: String }, // or Number
+    jobsCreated: { type: String }, // or Number
+    indirectJobs: { type: String }, // or Number
+    directJobs: { type: String }, // or Number
+    entryType: { type: String, enum: ["free", "paid"] },
     bookingPlatform: { type: String },
     newBookingPlatform: { type: String },
-    paymentMethods: { type: [String], default: [] },
-    language: { type: String, required: true },
+    paymentMethods: [{ type: String }],
+    language: { type: String },
     otherLanguage: { type: String },
     contactPerson: { type: String, required: true },
-    email: { type: String, required: true },
-    phone: { type: String, required: true },
+    email: { type: String },
+    phone: { type: String },
     notes: { type: String },
   },
   {
@@ -69,7 +86,8 @@ const TheatreActivitySchema: Schema = new Schema(
   }
 );
 
-export default mongoose.model<ITheatreActivity>(
+// ===== Export Model =====
+export default model<ITheatreActivity>(
   "TheatreActivity",
   TheatreActivitySchema
 );
