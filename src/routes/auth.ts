@@ -73,6 +73,17 @@ const loginHandler: RequestHandler<{}, any, LoginRequestBody> = async (
   }
 };
 
+// GET all users
+router.get("/users", async (req: Request, res: Response) => {
+  await connectDB();
+  try {
+    const users = await User.find({}, "-password"); // exclude passwords
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err });
+  }
+});
+
 // ===== Routes =====
 router.post("/register", registerHandler);
 router.post("/login", loginHandler);

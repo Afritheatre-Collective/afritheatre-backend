@@ -25,6 +25,7 @@ app.use(express.json());
 connectDB();
 
 app.use("/api/auth", authRoutes);
+app.use("/api/auth/users", authRoutes);
 app.use("/api", theatreRoutes);
 
 app.get("/", (req: Request, res: Response) => {
