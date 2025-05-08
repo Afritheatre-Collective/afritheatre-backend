@@ -4,7 +4,7 @@ import cors, { CorsOptions } from "cors";
 import connectDB from "./connection/db";
 import authRoutes from "./routes/auth";
 import theatreRoutes from "./routes/theatre";
-import venuesRoutes from "./routes/venues"; // ✅ Import venue routes
+import venuesRoutes from "./routes/venues";
 
 dotenv.config();
 
@@ -26,7 +26,7 @@ connectDB();
 app.use("/api/auth", authRoutes);
 app.use("/api/auth/users", authRoutes);
 app.use("/api", theatreRoutes);
-app.use("/api", venuesRoutes); // ✅ Mount venue routes
+app.use("/api", venuesRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");

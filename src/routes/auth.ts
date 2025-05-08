@@ -10,6 +10,7 @@ interface RegisterRequestBody {
   name: string;
   email: string;
   password: string;
+  phone: string;
 }
 
 interface LoginRequestBody {
@@ -23,7 +24,7 @@ const registerHandler: RequestHandler<{}, any, RegisterRequestBody> = async (
   res
 ) => {
   await connectDB();
-  const { name, email, password } = req.body;
+  const { name, email, password, phone } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
@@ -37,6 +38,7 @@ const registerHandler: RequestHandler<{}, any, RegisterRequestBody> = async (
       name,
       email,
       password: hashedPassword,
+      phone,
     });
 
     res.status(201).json({ message: "User registered", user: newUser });
