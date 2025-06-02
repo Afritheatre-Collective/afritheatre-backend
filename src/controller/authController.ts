@@ -1,9 +1,9 @@
-import express, { Request, Response, Router, RequestHandler } from "express";
+// controllers/authController.ts
+import { RequestHandler } from "express";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import User from "../models/User";
 import connectDB from "../connection/db";
-
-const router: Router = express.Router();
 
 // ===== Types =====
 interface RegisterRequestBody {
@@ -11,6 +11,7 @@ interface RegisterRequestBody {
   email: string;
   password: string;
   phone: string;
+  role: string; // added role
 }
 
 interface LoginRequestBody {
@@ -19,12 +20,13 @@ interface LoginRequestBody {
 }
 
 // ===== Register Handler =====
-const registerHandler: RequestHandler<{}, any, RegisterRequestBody> = async (
-  req,
-  res
-) => {
+export const registerHandler: RequestHandler<
+  {},
+  any,
+  RegisterRequestBody
+> = async (req, res) => {
   await connectDB();
-  const { name, email, password, phone } = req.body;
+  const { name, email, password, phone, role } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
@@ -39,22 +41,23 @@ const registerHandler: RequestHandler<{}, any, RegisterRequestBody> = async (
       email,
       password: hashedPassword,
       phone,
+      role,
     });
-
     res.status(201).json({ message: "User registered", user: newUser });
+    return;
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err });
+    return;
   }
 };
 
 // ===== Login Handler =====
-const loginHandler: RequestHandler<{}, any, LoginRequestBody> = async (
+export const loginHandler: RequestHandler<{}, any, LoginRequestBody> = async (
   req,
   res
 ) => {
   await connectDB();
   const { email, password } = req.body;
-
   try {
     const user = await User.findOne({ email });
     if (!user) {
@@ -67,27 +70,18 @@ const loginHandler: RequestHandler<{}, any, LoginRequestBody> = async (
       res.status(400).json({ message: "Invalid credentials" });
       return;
     }
-
-    // (Later: Generate JWT token here)
-    res.status(200).json({ message: "Login successful", user });
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined in environment variables");
+    }
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET as string,
+      { expiresIn: "1h" }
+    );
+    res.status(200).json({ message: "Login successful", user, token });
+    return;
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err });
+    return;
   }
 };
-
-// GET all users
-router.get("/users", async (req: Request, res: Response) => {
-  await connectDB();
-  try {
-    const users = await User.find({}, "-password"); // exclude passwords
-    res.status(200).json(users);
-  } catch (err) {
-    res.status(500).json({ message: "Server error", error: err });
-  }
-});
-
-// ===== Routes =====
-router.post("/register", registerHandler);
-router.post("/login", loginHandler);
-
-export default router;

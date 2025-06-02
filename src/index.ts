@@ -2,9 +2,10 @@ import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import cors, { CorsOptions } from "cors";
 import connectDB from "./connection/db";
-import authRoutes from "./routes/auth";
+import authRoutes from "./routes/authRoutes";
 import theatreRoutes from "./routes/theatre";
 import venuesRoutes from "./routes/venues";
+import userRoutes from "./routes/userRoutes";
 
 dotenv.config();
 
@@ -24,9 +25,9 @@ app.use(express.json());
 connectDB();
 
 app.use("/api/auth", authRoutes);
-app.use("/api/auth/users", authRoutes);
 app.use("/api", theatreRoutes);
 app.use("/api", venuesRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");

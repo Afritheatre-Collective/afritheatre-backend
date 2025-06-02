@@ -20,6 +20,7 @@ export interface ITheatreActivity extends Document {
   county: string;
   venue: string;
   newVenue: string;
+  poster?: string; // This will store the path/filename of the uploaded image
   totalSessions: string; // or number, depending on your needs
   jobsCreated: string; // or number
   indirectJobs: string; // or number
@@ -61,6 +62,9 @@ const TheatreActivitySchema: Schema = new Schema(
         "infrequent-regular",
         "infrequent-irregular",
       ],
+    },
+    poster: {
+      type: String, // This will store the path/filename of the uploaded image
     },
     eventName: { type: String, required: true },
     county: { type: String },
