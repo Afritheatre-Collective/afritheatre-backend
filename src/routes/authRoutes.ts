@@ -1,5 +1,9 @@
 import express, { Request, Response, Router } from "express";
-import { registerHandler, loginHandler } from "../controller/authController";
+import {
+  registerHandler,
+  loginHandler,
+  meHandler, // Add this import
+} from "../controller/authController";
 import User from "../models/User";
 import connectDB from "../connection/db";
 
@@ -8,6 +12,7 @@ const router: Router = express.Router();
 // ===== Routes =====
 router.post("/register", registerHandler);
 router.post("/login", loginHandler);
+router.get("/me", meHandler); // Use the controller here
 
 router.get("/users", async (req: Request, res: Response) => {
   await connectDB();

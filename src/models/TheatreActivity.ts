@@ -2,11 +2,7 @@ import { Document, model, Schema } from "mongoose";
 
 // ===== Interface =====
 export interface ITheatreActivity extends Document {
-  month: string;
-  week: string;
-  date: string;
-  year: string;
-  time: string;
+  date: Date;
   companyName: string;
   sector: "public" | "private";
   companyStatus: "new" | "existing";
@@ -42,11 +38,7 @@ export interface ITheatreActivity extends Document {
 // ===== Schema =====
 const TheatreActivitySchema: Schema = new Schema(
   {
-    month: { type: String },
-    week: { type: String },
-    date: { type: String },
-    year: { type: String },
-    time: { type: String },
+    date: { type: Date },
     companyName: { type: String, required: true },
     sector: { type: String, enum: ["public", "private"] },
     companyStatus: { type: String, enum: ["new", "existing"] },

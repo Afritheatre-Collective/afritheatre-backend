@@ -85,3 +85,42 @@ export const loginHandler: RequestHandler<{}, any, LoginRequestBody> = async (
     return;
   }
 };
+
+// Add this to your existing authController.ts
+export const meHandler: RequestHandler = async (req, res) => {
+  await connectDB();
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      res.status(401).json({ message: "No token provided" });
+      return;
+    }
+
+    if (!process.env.JWT_SECRET) {
+      res.status(500).json({ message: "Server configuration error" });
+      return;
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) as { id: string };
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    res.status(200).json(user);
+    return;
+  } catch (err) {
+    console.error("Error in /me endpoint:", err);
+    if (err instanceof jwt.TokenExpiredError) {
+      res.status(401).json({ message: "Token expired" });
+      return;
+    }
+    if (err instanceof jwt.JsonWebTokenError) {
+      res.status(401).json({ message: "Invalid token" });
+      return;
+    }
+    res.status(500).json({ message: "Server error", error: err });
+    return;
+  }
+};
