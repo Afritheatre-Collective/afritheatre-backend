@@ -2,18 +2,22 @@ import express, { Request, Response, Router } from "express";
 import {
   registerHandler,
   loginHandler,
-  meHandler, // Add this import
+  meHandler,
+  updateUserHandler,
+  deleteUserHandler,
 } from "../controller/authController";
 import User from "../models/User";
 import connectDB from "../connection/db";
 
 const router: Router = express.Router();
 
-// ===== Routes =====
 router.post("/register", registerHandler);
 router.post("/login", loginHandler);
-router.get("/me", meHandler); // Use the controller here
+router.get("/me", meHandler);
+router.put("/users/:id", updateUserHandler);
+router.delete("/users/:id", deleteUserHandler);
 
+// Fetch all users (without password)
 router.get("/users", async (req: Request, res: Response) => {
   await connectDB();
   try {

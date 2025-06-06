@@ -16,11 +16,11 @@ export interface ITheatreActivity extends Document {
   county: string;
   venue: string;
   newVenue: string;
-  poster?: string; // This will store the path/filename of the uploaded image
-  totalSessions: string; // or number, depending on your needs
-  jobsCreated: string; // or number
-  indirectJobs: string; // or number
-  directJobs: string; // or number
+  poster?: string;
+  totalSessions: string;
+  jobsCreated: string;
+  indirectJobs: string;
+  directJobs: string;
   entryType: "free" | "paid";
   bookingPlatform: string;
   newBookingPlatform: string;
@@ -31,6 +31,7 @@ export interface ITheatreActivity extends Document {
   email: string;
   phone: string;
   notes: string;
+  isPublic: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -56,16 +57,16 @@ const TheatreActivitySchema: Schema = new Schema(
       ],
     },
     poster: {
-      type: String, // This will store the path/filename of the uploaded image
+      type: String,
     },
     eventName: { type: String, required: true },
     county: { type: String },
     venue: { type: String },
     newVenue: { type: String },
-    totalSessions: { type: String }, // or Number
-    jobsCreated: { type: String }, // or Number
-    indirectJobs: { type: String }, // or Number
-    directJobs: { type: String }, // or Number
+    totalSessions: { type: String },
+    jobsCreated: { type: String },
+    indirectJobs: { type: String },
+    directJobs: { type: String },
     entryType: { type: String, enum: ["free", "paid"] },
     bookingPlatform: { type: String },
     newBookingPlatform: { type: String },
@@ -76,6 +77,7 @@ const TheatreActivitySchema: Schema = new Schema(
     email: { type: String },
     phone: { type: String },
     notes: { type: String },
+    isPublic: { type: Boolean, default: true },
   },
   {
     timestamps: true,
