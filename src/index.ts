@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes";
 import theatreRoutes from "./routes/theatre";
 import venuesRoutes from "./routes/venues";
 import userRoutes from "./routes/userRoutes";
+import uploadRoutes from "./routes/uploads";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api", theatreRoutes);
 app.use("/api", venuesRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api", uploadRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
