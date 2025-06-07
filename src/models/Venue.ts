@@ -8,6 +8,7 @@ const venueSchema = new mongoose.Schema(
     name: { type: String, required: true },
     capacity: { type: String, required: true },
     mapLink: { type: String },
+    imageUrl: { type: String },
     isPublic: {
       type: Boolean,
       default: false,

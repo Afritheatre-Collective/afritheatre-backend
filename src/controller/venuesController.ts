@@ -10,6 +10,7 @@ export interface VenueRequestBody {
   name: string;
   capacity: number;
   mapLink?: string;
+  imageUrl?: string;
   isPublic: boolean;
 }
 
@@ -21,7 +22,8 @@ export const createVenueHandler: RequestHandler<
 > = async (req, res) => {
   await connectDB();
 
-  const { county, subCounty, area, name, capacity, mapLink } = req.body;
+  const { county, subCounty, area, name, capacity, mapLink, imageUrl } =
+    req.body;
 
   if (!county || !name || !capacity) {
     res.status(400).json({ message: "Required fields are missing" });
@@ -36,6 +38,7 @@ export const createVenueHandler: RequestHandler<
       name,
       capacity,
       mapLink,
+      imageUrl,
     });
 
     res
